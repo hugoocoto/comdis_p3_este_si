@@ -1,6 +1,6 @@
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.util.List;
+import java.util.ArrayList;
 
 /* Problema de seguridad
  *
@@ -28,16 +28,18 @@ public interface IServidor extends Remote {
     // ===== GESTIÓN DE AMISTADES =====
     void solicitarAmistad(String deUsuario, String aUsuario) throws RemoteException;
 
-    List<String> getSolicitudesPendientes(String usuario) throws RemoteException;
+    ArrayList<String> getSolicitudesPendientes(String usuario) throws RemoteException;
 
     boolean aceptarSolicitudAmistad(String usuario, String amigo) throws RemoteException;
 
     boolean rechazarSolicitudAmistad(String usuario, String amigo) throws RemoteException;
 
     // ===== INFORMACIÓN DE USUARIOS =====
-    List<String> getAmigos(String user) throws RemoteException;
+    ArrayList<String> getAmigos(String user) throws RemoteException;
 
     boolean isUsuarioConectado(String user) throws RemoteException;
 
     String obtenerDireccionRMI(String usuario) throws RemoteException;
+
+    ArrayList<String> buscarUsuario(String ask) throws RemoteException;
 }

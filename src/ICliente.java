@@ -7,7 +7,7 @@ public interface ICliente extends Remote {
 
     void nuevoAmigo(String amigo) throws RemoteException;
 
-    void amigoConectado(String amigo) throws RemoteException;
+    void amigoConectado(String amigo, ICliente interfaz) throws RemoteException;
 
     void amigoDesconectado(String amigo) throws RemoteException;
 
