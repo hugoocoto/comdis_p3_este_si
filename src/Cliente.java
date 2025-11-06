@@ -95,7 +95,9 @@ public class Cliente extends UnicastRemoteObject implements ICliente {
     @Override
     public void amigoConectado(String amigo, ICliente interfaz) {
         amigosConectados.put(amigo, interfaz);
-        mensajes.put(amigo, new ArrayList<>());
+        if (mensajes.get(amigo) == null) {
+            mensajes.put(amigo, new ArrayList<>());
+        }
     }
 
     @Override
@@ -201,6 +203,11 @@ public class Cliente extends UnicastRemoteObject implements ICliente {
     }
 
     public ArrayList<String> getMensajes(String amigo) {
+        if (mensajes.get(amigo) == null) {
+            System.out.println("mensajes in " + amigo + " is null -> ");
+            System.out.println(mensajes);
+            return new ArrayList<>();
+        }
         return new ArrayList<>(mensajes.get(amigo));
     }
 

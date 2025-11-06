@@ -27,9 +27,6 @@ public class UI {
         System.exit(status);
     }
 
-    /**
-     * 
-     */
     private void StartMessgelistener() {
         new Thread(() -> {
             while (true) {
@@ -47,7 +44,7 @@ public class UI {
 
     private void refresh() {
         if (state.startsWith("chateando")) {
-            refreshChat(state.substring("chateando con".length()));
+            refreshChat(state.substring("chateando con ".length()));
         }
     }
 
@@ -129,13 +126,14 @@ public class UI {
         max = Math.min(list.size(), max);
         // I truly think that J clears from the cursor to the end of the line
         for (int i = list.size() - max; i < list.size(); i++) {
+            System.out.print("| ");
             if (list.get(i).startsWith(this.nombre)) {
-                System.out.print("\t\t");
+                System.out.print("\033[J\t\t");
             }
-            System.out.println(list.get(i) + "\033[J");
+            System.out.println(list.get(i));
         }
         for (int i = max; i < size; i++)
-            System.out.println("\033[J");
+            System.out.println("| ");
     }
 
     private void windowChats() {
@@ -155,19 +153,17 @@ public class UI {
     private void openChat(String amigo) {
         // chat de nombre <-> amigo
         state = "chateando con " + amigo;
-        clearScreen();
-
-        System.out.println("Chat con " + amigo);
-        displayList(cliente.getMensajes(amigo), 10, 10);
 
         while (true) {
+            clearScreen();
+            System.out.println("Chat con " + amigo);
+            displayList(cliente.getMensajes(amigo), 10, 10);
             String resp = ask("Enviar: ");
             if (resp.isEmpty())
                 return;
             if (cliente != null) {
                 cliente.enviar(cliente.getInterfaz(amigo), resp);
             }
-            refreshChat(amigo);
         }
     }
 

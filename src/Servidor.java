@@ -76,8 +76,9 @@ class Servidor extends UnicastRemoteObject implements IServidor {
     @Override
     public synchronized void logout(String nombre) throws RemoteException {
         for (String amigo : amigos.get(nombre)) {
-            // Posible null exception si algo va mal
-            clientes.get(amigo).amigoDesconectado(nombre);
+            if (clientes.containsKey(amigo)) {
+                clientes.get(amigo).amigoDesconectado(nombre);
+            }
         }
 
         clientes.remove(nombre);
