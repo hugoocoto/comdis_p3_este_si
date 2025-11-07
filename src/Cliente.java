@@ -18,10 +18,10 @@ public class Cliente extends UnicastRemoteObject implements ICliente {
     private IServidor servidor;
     private static final String SERVER_HOST = "localhost";
     private static final Integer SERVER_PORT = 1099;
-    /* Todos los mensajes enviados y recibidos de / a un amigo conectado */
     private Map<String, ArrayList<String>> mensajes;
     private Map<String, ICliente> amigosConectados;
     private boolean has_messages = false;
+    private ArrayList<String> UI_messages = new ArrayList<>();
 
     public Cliente() throws RemoteException {
         super();
@@ -35,7 +35,7 @@ public class Cliente extends UnicastRemoteObject implements ICliente {
             servidor.logout(nombre);
             return true;
         } catch (RemoteException e) {
-            System.out.println(e);
+            UI_messages.add(e.toString());
             return false;
         }
     }
@@ -52,12 +52,13 @@ public class Cliente extends UnicastRemoteObject implements ICliente {
              */
             servidor = getServer("rmi://" + SERVER_HOST + ":" + SERVER_PORT + "/Servidor");
             servir(this, this.puerto);
+
             return servidor.login(nombre,
                     Utils.encrypt(this.clave),
                     "rmi://localhost:" + this.puerto + "/Cliente");
 
         } catch (MalformedURLException | RemoteException | NotBoundException e) {
-            System.out.println(e);
+            UI_messages.add(e.toString());
             return false;
         }
     }
@@ -91,16 +92,15 @@ public class Cliente extends UnicastRemoteObject implements ICliente {
             a.enviar(this.nombre, mensaje);
             mensajes.get(a.getNombre()).add(nombre + ": " + mensaje);
         } catch (Exception e) {
-            System.out.println(e);
+            UI_messages.add(e.toString());
         }
     }
 
     @Override
     public void notificarAmigoConectado(String amigo, ICliente interfaz) {
+        UI_messages.add("Amigo conectado: " + amigo);
         amigosConectados.put(amigo, interfaz);
-        if (!mensajes.containsKey(amigo)) {
-            mensajes.put(amigo, new ArrayList<>());
-        }
+        mensajes.put(amigo, new ArrayList<>());
         synchronized (this) {
             this.notifyAll();
         }
@@ -108,9 +108,10 @@ public class Cliente extends UnicastRemoteObject implements ICliente {
 
     @Override
     public void notificarAmigoDesconectado(String amigo) throws RemoteException {
-        amigosConectados.remove(amigo);
-        // No borra los mensajes porque asi si se desconecta y se vuelve a
-        // conectar este usuario no pierde los mensajes.
+        if (amigosConectados.containsKey(amigo)) {
+            amigosConectados.remove(amigo);
+            mensajes.remove(amigo);
+        }
         synchronized (this) {
             this.notifyAll();
         }
@@ -131,7 +132,7 @@ public class Cliente extends UnicastRemoteObject implements ICliente {
             Naming.rebind(registryURL, cliente);
             // System.out.println("Server registered. Registry currently contains:");
 
-            listRegistry(registryURL);
+            // listRegistry(registryURL);
             // System.out.println("Server ready.");
         } catch (Exception re) {
             // System.out.println("servir: " + re);
@@ -151,23 +152,24 @@ public class Cliente extends UnicastRemoteObject implements ICliente {
         }
     }
 
-    private static void listRegistry(String registryURL) throws RemoteException, MalformedURLException {
-        // System.out.println("Registry " + registryURL + " contains: ");
-        String[] names = Naming.list(registryURL);
-        for (String name : names) {
-            // System.out.println(name);
-        }
-    }
+    // private static void listRegistry(String registryURL) throws RemoteException,
+    // MalformedURLException {
+    // // System.out.println("Registry " + registryURL + " contains: ");
+    // String[] names = Naming.list(registryURL);
+    // for (String name : names) {
+    // // System.out.println(name);
+    // }
+    // }
 
     private IServidor getServer(String host) throws MalformedURLException, RemoteException, NotBoundException {
         return (IServidor) Naming.lookup(host);
     }
 
-    public boolean register(String nombre2, String clave2) {
+    public boolean registrarUsuario(String nombre2, String clave2) {
         try {
             return servidor.registrarUsuario(nombre2, Utils.encrypt(clave2));
         } catch (RemoteException e) {
-            System.out.println(e);
+            UI_messages.add(e.toString());
             return false;
         }
     }
@@ -180,7 +182,7 @@ public class Cliente extends UnicastRemoteObject implements ICliente {
         try {
             return new ArrayList<>(servidor.getAmigos(nombre));
         } catch (RemoteException e) {
-            System.out.println(e);
+            UI_messages.add(e.toString());
             return new ArrayList<>();
         }
     }
@@ -189,15 +191,19 @@ public class Cliente extends UnicastRemoteObject implements ICliente {
         try {
             servidor.solicitarAmistad(nombre, string);
         } catch (RemoteException e) {
-            System.out.println(e);
+            UI_messages.add(e.toString());
         }
     }
 
-    public void aceptarSolicitud(String string) {
+    public void aceptarSolicitud(String usuario) {
         try {
-            servidor.aceptarSolicitudAmistad(nombre, string);
+            UI_messages.add("Aceptar solicitud de " + usuario);
+            servidor.aceptarSolicitudAmistad(nombre, usuario);
         } catch (RemoteException e) {
-            System.out.println(e);
+            UI_messages.add(e.toString());
+        }
+        synchronized (this) {
+            this.notifyAll();
         }
     }
 
@@ -205,7 +211,7 @@ public class Cliente extends UnicastRemoteObject implements ICliente {
         try {
             return servidor.buscarUsuario(ask);
         } catch (RemoteException e) {
-            System.out.println(e);
+            UI_messages.add(e.toString());
             return new ArrayList<>();
         }
     }
@@ -214,13 +220,13 @@ public class Cliente extends UnicastRemoteObject implements ICliente {
         try {
             return new ArrayList<>(servidor.getSolicitudesPendientes(nombre));
         } catch (RemoteException e) {
-            System.out.println(e);
+            UI_messages.add(e.toString());
             return new ArrayList<>();
         }
     }
 
     public ArrayList<String> getMensajes(String amigo) {
-        if (mensajes.get(amigo) == null) {
+        if (!mensajes.containsKey(amigo)) {
             return new ArrayList<>();
         }
         return new ArrayList<>(mensajes.get(amigo));
@@ -233,6 +239,12 @@ public class Cliente extends UnicastRemoteObject implements ICliente {
     public boolean hasNewMessages() {
         boolean status = has_messages;
         has_messages = false;
+        return status;
+    }
+
+    public ArrayList<String> getUIMessages() {
+        ArrayList<String> status = new ArrayList<>(UI_messages);
+        UI_messages.clear();
         return status;
     }
 

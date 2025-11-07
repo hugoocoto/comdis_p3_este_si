@@ -25,6 +25,16 @@ public class UI {
         login(cliente);
         StartMessgelistener();
         Integer status = mainloop();
+
+        // logout on C-c
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                cliente.logout(nombre);
+                System.out.println("Disconnected");
+            }
+        });
+
         cliente.logout(nombre);
         System.exit(status);
     }
@@ -63,11 +73,10 @@ public class UI {
 
     private Boolean login(Cliente c) {
         while (true) {
-            boolean status = c.login(
+            if (c.login(
                     this.nombre = ask("Nombre: "),
                     this.clave = ask("Clave: "),
-                    this.puerto = getInteger(ask("Port: "), 1024, 9999, 1100));
-            if (status)
+                    this.puerto = getInteger(ask("Port: "), 1024, 9999, 1100)))
                 break;
 
             if (cliente.existeUsuario(this.nombre)) {
@@ -78,8 +87,9 @@ public class UI {
             System.out.println("Usuario no registrado!");
 
             if (ask_sn("Quieres crear el usuario?")) {
-                if (c.register(nombre, clave)) {
-                    break;
+                if (c.registrarUsuario(nombre, clave)) {
+                    if (c.login(this.nombre, this.clave, this.puerto))
+                        break;
                 }
                 System.out.println("No se pudo crear el usuario!");
             }
@@ -104,6 +114,17 @@ public class UI {
         System.out.print("\033[u");
     }
 
+    private void printUIMessages() {
+        ArrayList<String> msgs = cliente.getUIMessages();
+        if (msgs.isEmpty())
+            return;
+        System.out.println("----- Messages -----");
+        for (String msg : msgs) {
+            System.out.println(msg);
+        }
+        System.out.println("--------------------");
+    }
+
     private void print_menu() {
         System.out.print("\033[H");
         System.out.println("MENU");
@@ -112,6 +133,7 @@ public class UI {
         System.out.println("[B] buscar");
         System.out.println("[S] solicitudes" + has_solicitudes_indicator());
         System.out.println("[Q] salir");
+        printUIMessages();
     }
 
     private Integer mainloop() {
