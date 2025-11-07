@@ -34,7 +34,7 @@ public class Cliente extends UnicastRemoteObject implements ICliente {
             servidor.logout(nombre);
             return true;
         } catch (RemoteException e) {
-            System.out.println(e.toString());
+            System.out.println(e);
             return false;
         }
     }
@@ -57,7 +57,7 @@ public class Cliente extends UnicastRemoteObject implements ICliente {
                     "rmi://localhost:" + this.puerto + "/Cliente");
 
         } catch (MalformedURLException | RemoteException | NotBoundException e) {
-            System.out.println(e.toString());
+            System.out.println(e);
             return false;
         }
     }
@@ -91,7 +91,7 @@ public class Cliente extends UnicastRemoteObject implements ICliente {
             a.enviar(this.nombre, mensaje);
             mensajes.get(a.getNombre()).add(nombre + ": " + mensaje);
         } catch (Exception e) {
-            System.out.println(e.toString());
+            System.out.println("No se pudo enviar");
         }
     }
 
@@ -167,7 +167,7 @@ public class Cliente extends UnicastRemoteObject implements ICliente {
         try {
             return servidor.registrarUsuario(nombre2, Utils.encrypt(clave2));
         } catch (RemoteException e) {
-            System.out.println(e.toString());
+            System.out.println(e);
             return false;
         }
     }
@@ -180,7 +180,7 @@ public class Cliente extends UnicastRemoteObject implements ICliente {
         try {
             return new ArrayList<>(servidor.getAmigos(nombre));
         } catch (RemoteException e) {
-            System.out.println(e.toString());
+            System.out.println(e);
             return new ArrayList<>();
         }
     }
@@ -189,7 +189,7 @@ public class Cliente extends UnicastRemoteObject implements ICliente {
         try {
             servidor.solicitarAmistad(nombre, string);
         } catch (RemoteException e) {
-            System.out.println(e.toString());
+            System.out.println(e);
         }
     }
 
@@ -197,7 +197,7 @@ public class Cliente extends UnicastRemoteObject implements ICliente {
         try {
             servidor.aceptarSolicitudAmistad(nombre, usuario);
         } catch (RemoteException e) {
-            System.out.println(e.toString());
+            System.out.println(e);
         }
         synchronized (this) {
             this.notifyAll();
@@ -208,7 +208,7 @@ public class Cliente extends UnicastRemoteObject implements ICliente {
         try {
             return servidor.buscarUsuario(ask);
         } catch (RemoteException e) {
-            System.out.println(e.toString());
+            System.out.println(e);
             return new ArrayList<>();
         }
     }
@@ -217,7 +217,7 @@ public class Cliente extends UnicastRemoteObject implements ICliente {
         try {
             return new ArrayList<>(servidor.getSolicitudesPendientes(nombre));
         } catch (RemoteException e) {
-            System.out.println(e.toString());
+            System.out.println(e);
             return new ArrayList<>();
         }
     }
@@ -245,6 +245,35 @@ public class Cliente extends UnicastRemoteObject implements ICliente {
         } catch (RemoteException e) {
             return false; // o true?
         }
+    }
+
+    public void rechazarSolicitud(String usuario) {
+        try {
+            servidor.rechazarSolicitudAmistad(nombre, usuario);
+        } catch (RemoteException e) {
+            System.out.println(e);
+        }
+    }
+
+    public boolean usuarioConectado(String usuario) {
+        return amigosConectados.containsKey(usuario);
+    }
+
+    public boolean cambiarClave(String vieja, String nueva) {
+        if (!vieja.equals(this.clave)) {
+            return false;
+        }
+        try {
+            if (servidor.cambiarClave(this.nombre,
+                    Utils.encrypt(vieja),
+                    Utils.encrypt(nueva))) {
+                this.clave = nueva;
+                return true;
+            }
+        } catch (RemoteException e) {
+            System.out.println(e);
+        }
+        return false;
     }
 
 }

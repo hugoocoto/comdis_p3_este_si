@@ -44,4 +44,6 @@ public interface IServidor extends Remote {
     ArrayList<String> buscarUsuario(String ask) throws RemoteException;
 
     boolean existeUsuario(String user) throws RemoteException;
+
+	boolean cambiarClave(String nombre, String vieja, String nueva)throws RemoteException;
 }

@@ -14,7 +14,7 @@ public class UI {
     private String clave;
     private Integer puerto;
     private boolean should_quit = false;
-    private String prompt = ">> ";
+    private String prompt = " >> ";
     private Cliente cliente;
     private String state = "";
 
@@ -101,11 +101,11 @@ public class UI {
     }
 
     private String has_new_messages_indicator() {
-        return cliente.hasNewMessages() ? "*" : "";
+        return cliente.hasNewMessages() ? "*" : " ";
     }
 
     private String has_solicitudes_indicator() {
-        return cliente.getSolicitudes().isEmpty() ? "" : "*";
+        return cliente.getSolicitudes().isEmpty() ? " " : "*";
     }
 
     private void refresh_menu() {
@@ -116,11 +116,12 @@ public class UI {
 
     private void print_menu() {
         System.out.print("\033[H");
-        System.out.println("MENU");
+        System.out.println("    Menu:");
         System.out.println("[C] chats" + has_new_messages_indicator());
         System.out.println("[A] amigos");
         System.out.println("[B] buscar");
         System.out.println("[S] solicitudes" + has_solicitudes_indicator());
+        System.out.println("[J] ajustes");
         System.out.println("[Q] salir");
     }
 
@@ -134,22 +135,29 @@ public class UI {
                 continue;
             switch (resp.toLowerCase().toCharArray()[0]) {
                 case 'c':
+                    state = "";
                     windowChats();
                     break;
                 case 'a':
+                    state = "";
                     windowAmigos();
                     break;
                 case 'b':
+                    state = "";
                     windowBuscar();
                     break;
                 case 's':
+                    state = "";
                     windowSolicitudes();
+                    break;
+                case 'j':
+                    state = "";
+                    windowAjustes();
                     break;
                 case 'q':
                     should_quit = true;
                     break;
             }
-            state = "";
         }
         return 0; // Exit code
     }
@@ -161,9 +169,20 @@ public class UI {
         }
     }
 
+    private void displayListNoNum(ArrayList<String> list, Integer max) {
+        max = Math.min(list.size(), max);
+        for (int i = list.size() - max; i < list.size(); i++) {
+            if (cliente.usuarioConectado(list.get(i))) {
+                System.out.print("[*] ");
+            } else {
+                System.out.print("[ ] ");
+            }
+            System.out.println(list.get(i));
+        }
+    }
+
     private void displayList(ArrayList<String> list, Integer max, Integer size) {
         max = Math.min(list.size(), max);
-        // I truly think that J clears from the cursor to the end of the line
         for (int i = list.size() - max; i < list.size(); i++) {
             System.out.print("\033[K| ");
             if (list.get(i).startsWith(this.nombre)) {
@@ -190,7 +209,6 @@ public class UI {
     }
 
     private void openChat(String amigo) {
-        // chat de nombre <-> amigo
         state = "chateando con " + amigo;
 
         clearScreen();
@@ -231,8 +249,30 @@ public class UI {
         clearScreen();
         System.out.println("Amigos:");
         ArrayList<String> amigos = cliente.getamigos();
-        displayList(amigos, 100);
-        ask("Pulsa cualquier tecla para salir");
+        displayListNoNum(amigos, 100);
+        ask("Pulsa cualquier tecla para salir ");
+    }
+
+    private void windowAjustes() {
+        System.out.println("[c] cambiar clave");
+        String resp = ask();
+        if (resp.isEmpty())
+            return;
+        switch (resp.toLowerCase().charAt(0)) {
+            case 'c':
+                System.out.println("Escribe la nueva clave:");
+                if (cliente.cambiarClave(this.clave, ask())) {
+                    ask("Cambio aceptado ");
+                    break;
+                } else {
+                    ask("Cambio rechazado ");
+                    break;
+                }
+            default:
+                ask("Opcion invalida ");
+                break;
+        }
+
     }
 
     private void windowBuscar() {
@@ -259,7 +299,25 @@ public class UI {
         if (n.equals(-1)) {
             return;
         }
-        cliente.aceptarSolicitud(solis.get(n));
+        System.out.println("Solicitud seleccionada: " + solis.get(n));
+        System.out.println("[a]: aceptar");
+        System.out.println("[r]: rechazar");
+        String resp = ask();
+        if (resp.isEmpty())
+            return;
+        switch (resp.toLowerCase().charAt(0)) {
+            case 'a':
+                cliente.aceptarSolicitud(solis.get(n));
+                ask("Solicitud aceptada ");
+                break;
+            case 'r':
+                cliente.rechazarSolicitud(solis.get(n));
+                ask("Solicitud rechazada ");
+                break;
+            default:
+                ask("Opcion invalida ");
+                break;
+        }
     }
 
     private String ask(String prompt) {
