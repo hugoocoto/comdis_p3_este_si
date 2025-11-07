@@ -1,9 +1,16 @@
-"I really love RMI" ~ No one, never.
+                      "I really love RMI" ~ No one, never.
 
-## How to run
+                                -- How to run -- 
+                                make -> compiles
+                               make run_servidor
+                                make run_cliente 
 
-```sh
-make              # compila
-make run_servidor # ejecuta el servidor
-make run_cliente  # ejecuta el cliente con tui
-```
+                                 -- Authors --
+                             Hugo Coto - Programmer
+                        Guille Fernández - Code reviewer
+
+                           -- Code considerations --
+                           Slow and unestable server
+                         unsafe and inefficient client
+                         Interactiveless TUI by scratch
+                          Swing eye damager interface
