@@ -1,0 +1,9 @@
+"I really love RMI" ~ No one, never.
+
+## How to run
+
+```sh
+make              # compila
+make run_servidor # ejecuta el servidor
+make run_cliente  # ejecuta el cliente con tui
+```
