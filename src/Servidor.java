@@ -169,7 +169,6 @@ class Servidor extends UnicastRemoteObject implements IServidor {
 
     @Override
     public boolean isUsuarioConectado(String user) throws RemoteException {
-        System.out.println("Clientes: " + clientes.keySet());
         return clientes.containsKey(user);
     }
 
@@ -232,8 +231,6 @@ class Servidor extends UnicastRemoteObject implements IServidor {
 
     public boolean cambiarClave(String nombre, String vieja, String nueva) {
         if (!loginExitoso(nombre, vieja)) {
-            System.out.println("Login fallido en cambiar clave: '" + nombre + "' '" + vieja + "'");
-            System.out.println(passwords);
             return false;
         }
         passwords.put(nombre, nueva);

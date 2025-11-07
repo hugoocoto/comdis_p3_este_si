@@ -38,7 +38,8 @@ class PastelTheme {
     public static void apply() {
         try {
             UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
 
         UIManager.put("Panel.background", BG_LIGHT);
         UIManager.put("OptionPane.background", BG_LIGHT);
@@ -62,8 +63,13 @@ class PastelTheme {
         b.setContentAreaFilled(true);
         b.setOpaque(true);
         b.addMouseListener(new MouseAdapter() {
-            public void mouseEntered(MouseEvent e) { b.setBackground(ACCENT_DARK); }
-            public void mouseExited(MouseEvent e) { b.setBackground(ACCENT); }
+            public void mouseEntered(MouseEvent e) {
+                b.setBackground(ACCENT_DARK);
+            }
+
+            public void mouseExited(MouseEvent e) {
+                b.setBackground(ACCENT);
+            }
         });
     }
 
@@ -136,14 +142,26 @@ class LoginRegisterFrame extends JFrame {
         JSpinner spPort = new JSpinner(new SpinnerNumberModel(1100, 1024, 65535, 1));
 
         int y = 0;
-        gbc.gridx = 0; gbc.gridy = y; form.add(new JLabel("Usuario"), gbc);
-        gbc.gridx = 1; gbc.gridy = y++; form.add(txtUser, gbc);
+        gbc.gridx = 0;
+        gbc.gridy = y;
+        form.add(new JLabel("Usuario"), gbc);
+        gbc.gridx = 1;
+        gbc.gridy = y++;
+        form.add(txtUser, gbc);
 
-        gbc.gridx = 0; gbc.gridy = y; form.add(new JLabel("Clave"), gbc);
-        gbc.gridx = 1; gbc.gridy = y++; form.add(txtPass, gbc);
+        gbc.gridx = 0;
+        gbc.gridy = y;
+        form.add(new JLabel("Clave"), gbc);
+        gbc.gridx = 1;
+        gbc.gridy = y++;
+        form.add(txtPass, gbc);
 
-        gbc.gridx = 0; gbc.gridy = y; form.add(new JLabel("Puerto local"), gbc);
-        gbc.gridx = 1; gbc.gridy = y++; form.add(spPort, gbc);
+        gbc.gridx = 0;
+        gbc.gridy = y;
+        form.add(new JLabel("Puerto local"), gbc);
+        gbc.gridx = 1;
+        gbc.gridy = y++;
+        form.add(spPort, gbc);
 
         card.add(form, BorderLayout.CENTER);
 
@@ -165,89 +183,101 @@ class LoginRegisterFrame extends JFrame {
         return root;
     }
 
-private JPanel buildRegisterPanel() {
-    JPanel root = new JPanel(new BorderLayout(12, 12));
-    root.setBorder(BorderFactory.createEmptyBorder(18, 18, 18, 18));
-    root.setBackground(PastelTheme.BG_LIGHT);
+    private JPanel buildRegisterPanel() {
+        JPanel root = new JPanel(new BorderLayout(12, 12));
+        root.setBorder(BorderFactory.createEmptyBorder(18, 18, 18, 18));
+        root.setBackground(PastelTheme.BG_LIGHT);
 
-    JLabel title = new JLabel("Crear cuenta");
-    title.setFont(title.getFont().deriveFont(Font.BOLD, 22f));
-    JLabel sub = new JLabel("Regístrate para usar el chat");
-    sub.setForeground(PastelTheme.TEXT_SOFT);
+        JLabel title = new JLabel("Crear cuenta");
+        title.setFont(title.getFont().deriveFont(Font.BOLD, 22f));
+        JLabel sub = new JLabel("Regístrate para usar el chat");
+        sub.setForeground(PastelTheme.TEXT_SOFT);
 
-    JPanel header = new JPanel(new GridLayout(0, 1, 0, 4));
-    header.setOpaque(true);
-    header.setBackground(PastelTheme.BG_LIGHT);
-    header.add(title);
-    header.add(sub);
-    root.add(header, BorderLayout.NORTH);
+        JPanel header = new JPanel(new GridLayout(0, 1, 0, 4));
+        header.setOpaque(true);
+        header.setBackground(PastelTheme.BG_LIGHT);
+        header.add(title);
+        header.add(sub);
+        root.add(header, BorderLayout.NORTH);
 
-    JPanel card = PastelTheme.cardPanel();
-    JPanel form = new JPanel(new GridBagLayout());
-    form.setOpaque(false);
-    GridBagConstraints gbc = new GridBagConstraints();
-    gbc.insets = new Insets(8, 8, 8, 8);
-    gbc.anchor = GridBagConstraints.WEST;
-    gbc.fill = GridBagConstraints.HORIZONTAL;
-    gbc.weightx = 1;
+        JPanel card = PastelTheme.cardPanel();
+        JPanel form = new JPanel(new GridBagLayout());
+        form.setOpaque(false);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(8, 8, 8, 8);
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weightx = 1;
 
-    JTextField txtUser = new JTextField();
-    JPasswordField txtPass = new JPasswordField();
-    // 👇 NUEVO: spinner para el puerto (igual que en login)
-    JSpinner spPortReg = new JSpinner(new SpinnerNumberModel(1100, 1024, 65535, 1));
+        JTextField txtUser = new JTextField();
+        JPasswordField txtPass = new JPasswordField();
+        // 👇 NUEVO: spinner para el puerto (igual que en login)
+        JSpinner spPortReg = new JSpinner(new SpinnerNumberModel(1100, 1024, 65535, 1));
 
-    JButton btnRegister = new JButton("Crear cuenta");
-    PastelTheme.stylePrimary(btnRegister);
+        JButton btnRegister = new JButton("Crear cuenta");
+        PastelTheme.stylePrimary(btnRegister);
 
-    int y = 0;
-    gbc.gridx = 0; gbc.gridy = y; form.add(new JLabel("Usuario"), gbc);
-    gbc.gridx = 1; gbc.gridy = y++; form.add(txtUser, gbc);
+        int y = 0;
+        gbc.gridx = 0;
+        gbc.gridy = y;
+        form.add(new JLabel("Usuario"), gbc);
+        gbc.gridx = 1;
+        gbc.gridy = y++;
+        form.add(txtUser, gbc);
 
-    gbc.gridx = 0; gbc.gridy = y; form.add(new JLabel("Clave"), gbc);
-    gbc.gridx = 1; gbc.gridy = y++; form.add(txtPass, gbc);
+        gbc.gridx = 0;
+        gbc.gridy = y;
+        form.add(new JLabel("Clave"), gbc);
+        gbc.gridx = 1;
+        gbc.gridy = y++;
+        form.add(txtPass, gbc);
 
-    // 👇 NUEVO: fila de "Puerto local"
-    gbc.gridx = 0; gbc.gridy = y; form.add(new JLabel("Puerto local"), gbc);
-    gbc.gridx = 1; gbc.gridy = y++; form.add(spPortReg, gbc);
+        // 👇 NUEVO: fila de "Puerto local"
+        gbc.gridx = 0;
+        gbc.gridy = y;
+        form.add(new JLabel("Puerto local"), gbc);
+        gbc.gridx = 1;
+        gbc.gridy = y++;
+        form.add(spPortReg, gbc);
 
-    // Acción de registro + auto-login
-    btnRegister.addActionListener(e -> {
-        String user = txtUser.getText().trim();
-        String pass = new String(txtPass.getPassword());
-        if (user.isEmpty() || pass.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Usuario y clave obligatorios", "Registro",
-                    JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-        boolean ok = cliente.registrarUsuario(user, pass);
-        if (ok) {
-            JOptionPane.showMessageDialog(this, "Usuario creado. Iniciando sesión...");
-            int port = (Integer) spPortReg.getValue();
-            boolean logged = cliente.login(user, pass, port);
-            if (logged) {
-                MainWindow mw = new MainWindow(this, cliente, user);
-                mw.setVisible(true);
-                setVisible(false);
-            } else {
-                JOptionPane.showMessageDialog(this,
-                        "Registro correcto, pero no se pudo iniciar sesión.",
-                        "Login", JOptionPane.WARNING_MESSAGE);
+        // Acción de registro + auto-login
+        btnRegister.addActionListener(e -> {
+            String user = txtUser.getText().trim();
+            String pass = new String(txtPass.getPassword());
+            if (user.isEmpty() || pass.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Usuario y clave obligatorios", "Registro",
+                        JOptionPane.WARNING_MESSAGE);
+                return;
             }
-        } else {
-            JOptionPane.showMessageDialog(this, "No se pudo registrar. ¿Quizá ya existe?",
-                    "Registro", JOptionPane.ERROR_MESSAGE);
-        }
-    });
+            boolean ok = cliente.registrarUsuario(user, pass);
+            if (ok) {
+                JOptionPane.showMessageDialog(this, "Usuario creado. Iniciando sesión...");
+                int port = (Integer) spPortReg.getValue();
+                boolean logged = cliente.login(user, pass, port);
+                if (logged) {
+                    MainWindow mw = new MainWindow(this, cliente, user);
+                    mw.setVisible(true);
+                    setVisible(false);
+                } else {
+                    JOptionPane.showMessageDialog(this,
+                            "Registro correcto, pero no se pudo iniciar sesión.",
+                            "Login", JOptionPane.WARNING_MESSAGE);
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "No se pudo registrar. ¿Quizá ya existe?",
+                        "Registro", JOptionPane.ERROR_MESSAGE);
+            }
+        });
 
-    card.add(form, BorderLayout.CENTER);
-    JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-    actions.setOpaque(false);
-    actions.add(btnRegister);
-    card.add(actions, BorderLayout.SOUTH);
+        card.add(form, BorderLayout.CENTER);
+        JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        actions.setOpaque(false);
+        actions.add(btnRegister);
+        card.add(actions, BorderLayout.SOUTH);
 
-    root.add(card, BorderLayout.CENTER);
-    return root;
-}
+        root.add(card, BorderLayout.CENTER);
+        return root;
+    }
 
     private void doQuickRegister(JTextField txtUser, JPasswordField txtPass) {
         String user = txtUser.getText().trim();
@@ -291,7 +321,7 @@ private JPanel buildRegisterPanel() {
 class FriendListCellRenderer extends DefaultListCellRenderer {
     @Override
     public Component getListCellRendererComponent(JList<?> list, Object value, int index,
-                                                  boolean isSelected, boolean cellHasFocus) {
+            boolean isSelected, boolean cellHasFocus) {
         JLabel c = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
         c.setOpaque(true);
         if (isSelected) {
@@ -322,7 +352,7 @@ class MainWindow extends JFrame {
     private final JList<String> listSolicitudes = new JList<>(modelSolicitudes);
 
     private volatile boolean running = true;
-    private javax.swing.Timer fallbackTimer;  // ✅ necesario para el refresco automático
+    private javax.swing.Timer fallbackTimer; // ✅ necesario para el refresco automático
 
     MainWindow(JFrame parent, Cliente cliente, String usuario) {
         super("Bienvenido, " + usuario);
@@ -403,7 +433,9 @@ class MainWindow extends JFrame {
         btnBuscar.addActionListener(e -> {
             modelResultados.clear();
             ArrayList<String> res = cliente.buscarUsuario(txtBuscar.getText().trim());
-            for (String u : res) if (!u.equals(usuario)) modelResultados.addElement(u);
+            for (String u : res)
+                if (!u.equals(usuario))
+                    modelResultados.addElement(u);
         });
 
         top.add(new JLabel("Busca usuarios y envía solicitudes"), BorderLayout.WEST);
@@ -423,40 +455,38 @@ class MainWindow extends JFrame {
 
         JButton btnSolicitar = new JButton("Enviar solicitud");
         PastelTheme.stylePrimary(btnSolicitar);
-btnSolicitar.addActionListener(e -> {
-    String sel = listResultados.getSelectedValue();
-    if (sel == null) {
-        JOptionPane.showMessageDialog(this, "Selecciona un usuario primero.");
-        return;
-    }
+        btnSolicitar.addActionListener(e -> {
+            String sel = listResultados.getSelectedValue();
+            if (sel == null) {
+                JOptionPane.showMessageDialog(this, "Selecciona un usuario primero.");
+                return;
+            }
 
-    // Evita enviarte solicitud a ti mismo
-    if (sel.equals(usuario)) {
-        JOptionPane.showMessageDialog(
-                this,
-                "No puedes enviarte una solicitud a ti mismo.",
-                "Solicitud de amistad",
-                JOptionPane.ERROR_MESSAGE
-        );
-        return;
-    }
+            // Evita enviarte solicitud a ti mismo
+            if (sel.equals(usuario)) {
+                JOptionPane.showMessageDialog(
+                        this,
+                        "No puedes enviarte una solicitud a ti mismo.",
+                        "Solicitud de amistad",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
 
-    // ❌ Ya sois amigos: muestra error y NO envía
-    java.util.ArrayList<String> amigos = cliente.getamigos();
-    if (amigos != null && amigos.contains(sel)) {
-        JOptionPane.showMessageDialog(
-                this,
-                "Ya sois amigos: " + usuario + " y " + sel,
-                "Solicitud de amistad",
-                JOptionPane.ERROR_MESSAGE
-        );
-        return;
-    }
+            // ❌ Ya sois amigos: muestra error y NO envía
+            java.util.ArrayList<String> amigos = cliente.getamigos();
+            if (amigos != null && amigos.contains(sel)) {
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Ya sois amigos: " + usuario + " y " + sel,
+                        "Solicitud de amistad",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
 
-    // ✅ Enviar solicitud
-    cliente.enviarSolicitud(sel);
-    JOptionPane.showMessageDialog(this, "Solicitud enviada a " + sel);
-});
+            // ✅ Enviar solicitud
+            cliente.enviarSolicitud(sel);
+            JOptionPane.showMessageDialog(this, "Solicitud enviada a " + sel);
+        });
 
         JPanel bottom = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         bottom.setOpaque(false);
@@ -481,11 +511,17 @@ btnSolicitar.addActionListener(e -> {
 
         btnAceptar.addActionListener(e -> {
             String sel = listSolicitudes.getSelectedValue();
-            if (sel != null) { cliente.aceptarSolicitud(sel); refreshLists(); }
+            if (sel != null) {
+                cliente.aceptarSolicitud(sel);
+                refreshLists();
+            }
         });
         btnRechazar.addActionListener(e -> {
             String sel = listSolicitudes.getSelectedValue();
-            if (sel != null) { cliente.rechazarSolicitud(sel); refreshLists(); }
+            if (sel != null) {
+                cliente.rechazarSolicitud(sel);
+                refreshLists();
+            }
         });
 
         JPanel bottom = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -520,11 +556,15 @@ btnSolicitar.addActionListener(e -> {
 
     // ✅ Método actualizado con fallbackTimer
     private void startBackgroundRefresh() {
-        // Hilo que escucha notifyAll() del cliente (cuando se conecta o desconecta alguien)
+        // Hilo que escucha notifyAll() del cliente (cuando se conecta o desconecta
+        // alguien)
         Thread t = new Thread(() -> {
             while (running && isDisplayable()) {
                 synchronized (cliente) {
-                    try { cliente.wait(); } catch (InterruptedException ignored) {}
+                    try {
+                        cliente.wait();
+                    } catch (InterruptedException ignored) {
+                    }
                 }
                 SwingUtilities.invokeLater(this::refreshLists);
             }
@@ -534,8 +574,10 @@ btnSolicitar.addActionListener(e -> {
 
         // Fallback: actualiza cada 2 segundos por si se pierde alguna notificación
         fallbackTimer = new javax.swing.Timer(2000, e -> {
-            if (isDisplayable()) refreshLists();
-            else ((javax.swing.Timer) e.getSource()).stop();
+            if (isDisplayable())
+                refreshLists();
+            else
+                ((javax.swing.Timer) e.getSource()).stop();
         });
         fallbackTimer.start();
 
@@ -543,60 +585,70 @@ btnSolicitar.addActionListener(e -> {
         refreshLists();
     }
 
-// Reemplaza íntegro en MainWindow
-private void refreshLists() {
-    // --- Amigos conectados: preserva selección y evita reseteos innecesarios
-    String prevSel = listConectados.getSelectedValue();
+    // Reemplaza íntegro en MainWindow
+    private void refreshLists() {
+        // --- Amigos conectados: preserva selección y evita reseteos innecesarios
+        String prevSel = listConectados.getSelectedValue();
 
-    ArrayList<String> online = new ArrayList<>();
-    for (String a : cliente.getamigos()) {
-        if (cliente.usuarioConectado(a)) online.add(a);
-    }
+        ArrayList<String> online = new ArrayList<>();
+        for (String a : cliente.getamigos()) {
+            if (cliente.usuarioConectado(a))
+                online.add(a);
+        }
 
-    boolean changed = (modelConectados.size() != online.size());
-    if (!changed) {
-        for (int i = 0; i < online.size(); i++) {
-            if (!online.get(i).equals(modelConectados.get(i))) { changed = true; break; }
+        boolean changed = (modelConectados.size() != online.size());
+        if (!changed) {
+            for (int i = 0; i < online.size(); i++) {
+                if (!online.get(i).equals(modelConectados.get(i))) {
+                    changed = true;
+                    break;
+                }
+            }
+        }
+        if (changed) {
+            // Evita eventos intermedios mientras actualizas
+            listConectados.setValueIsAdjusting(true);
+            modelConectados.clear();
+            for (String s : online)
+                modelConectados.addElement(s);
+            listConectados.setValueIsAdjusting(false);
+        }
+
+        // Restaura selección si sigue existiendo
+        if (prevSel != null) {
+            int idx = online.indexOf(prevSel);
+            if (idx >= 0) {
+                listConectados.setSelectedIndex(idx);
+                listConectados.ensureIndexIsVisible(idx);
+            }
+        }
+
+        // --- Solicitudes pendientes (mismo patrón)
+        String prevReq = listSolicitudes.getSelectedValue();
+        ArrayList<String> sol = cliente.getSolicitudes();
+
+        boolean changedReq = (modelSolicitudes.size() != sol.size());
+        if (!changedReq) {
+            for (int i = 0; i < sol.size(); i++) {
+                if (!sol.get(i).equals(modelSolicitudes.get(i))) {
+                    changedReq = true;
+                    break;
+                }
+            }
+        }
+        if (changedReq) {
+            listSolicitudes.setValueIsAdjusting(true);
+            modelSolicitudes.clear();
+            for (String s : sol)
+                modelSolicitudes.addElement(s);
+            listSolicitudes.setValueIsAdjusting(false);
+        }
+        if (prevReq != null) {
+            int idx2 = sol.indexOf(prevReq);
+            if (idx2 >= 0)
+                listSolicitudes.setSelectedIndex(idx2);
         }
     }
-    if (changed) {
-        // Evita eventos intermedios mientras actualizas
-        listConectados.setValueIsAdjusting(true);
-        modelConectados.clear();
-        for (String s : online) modelConectados.addElement(s);
-        listConectados.setValueIsAdjusting(false);
-    }
-
-    // Restaura selección si sigue existiendo
-    if (prevSel != null) {
-        int idx = online.indexOf(prevSel);
-        if (idx >= 0) {
-            listConectados.setSelectedIndex(idx);
-            listConectados.ensureIndexIsVisible(idx);
-        }
-    }
-
-    // --- Solicitudes pendientes (mismo patrón)
-    String prevReq = listSolicitudes.getSelectedValue();
-    ArrayList<String> sol = cliente.getSolicitudes();
-
-    boolean changedReq = (modelSolicitudes.size() != sol.size());
-    if (!changedReq) {
-        for (int i = 0; i < sol.size(); i++) {
-            if (!sol.get(i).equals(modelSolicitudes.get(i))) { changedReq = true; break; }
-        }
-    }
-    if (changedReq) {
-        listSolicitudes.setValueIsAdjusting(true);
-        modelSolicitudes.clear();
-        for (String s : sol) modelSolicitudes.addElement(s);
-        listSolicitudes.setValueIsAdjusting(false);
-    }
-    if (prevReq != null) {
-        int idx2 = sol.indexOf(prevReq);
-        if (idx2 >= 0) listSolicitudes.setSelectedIndex(idx2);
-    }
-}
 }
 
 // =================== Ventana de chat =========================
@@ -656,7 +708,8 @@ class ChatWindow extends JFrame {
 
     private void send(JTextField txt) {
         String m = txt.getText();
-        if (m == null || m.isEmpty()) return;
+        if (m == null || m.isEmpty())
+            return;
         try {
             ICliente iface = cliente.getInterfaz(amigo);
             if (iface == null) {
@@ -675,7 +728,10 @@ class ChatWindow extends JFrame {
         Thread t = new Thread(() -> {
             while (running) {
                 synchronized (cliente) {
-                    try { cliente.wait(); } catch (InterruptedException ignored) {}
+                    try {
+                        cliente.wait();
+                    } catch (InterruptedException ignored) {
+                    }
                 }
                 SwingUtilities.invokeLater(this::refreshMessages);
             }
@@ -687,7 +743,8 @@ class ChatWindow extends JFrame {
     private void refreshMessages() {
         modelMensajes.clear();
         ArrayList<String> msgs = cliente.getMensajes(amigo);
-        for (String s : msgs) modelMensajes.addElement(s);
+        for (String s : msgs)
+            modelMensajes.addElement(s);
     }
 }
 
@@ -734,14 +791,26 @@ class ChangePasswordWindow extends JFrame {
         JPasswordField txtNew2 = new JPasswordField();
 
         int y = 0;
-        gbc.gridx = 0; gbc.gridy = y; form.add(new JLabel("Contraseña antigua"), gbc);
-        gbc.gridx = 1; gbc.gridy = y++; form.add(txtOld, gbc);
+        gbc.gridx = 0;
+        gbc.gridy = y;
+        form.add(new JLabel("Contraseña antigua"), gbc);
+        gbc.gridx = 1;
+        gbc.gridy = y++;
+        form.add(txtOld, gbc);
 
-        gbc.gridx = 0; gbc.gridy = y; form.add(new JLabel("Nueva contraseña"), gbc);
-        gbc.gridx = 1; gbc.gridy = y++; form.add(txtNew, gbc);
+        gbc.gridx = 0;
+        gbc.gridy = y;
+        form.add(new JLabel("Nueva contraseña"), gbc);
+        gbc.gridx = 1;
+        gbc.gridy = y++;
+        form.add(txtNew, gbc);
 
-        gbc.gridx = 0; gbc.gridy = y; form.add(new JLabel("Repite la nueva"), gbc);
-        gbc.gridx = 1; gbc.gridy = y++; form.add(txtNew2, gbc);
+        gbc.gridx = 0;
+        gbc.gridy = y;
+        form.add(new JLabel("Repite la nueva"), gbc);
+        gbc.gridx = 1;
+        gbc.gridy = y++;
+        form.add(txtNew2, gbc);
 
         card.add(form, BorderLayout.CENTER);
 
@@ -766,11 +835,10 @@ class ChangePasswordWindow extends JFrame {
             }
             if (oldP.equals(newP)) {
                 JOptionPane.showMessageDialog(
-                    this,
-                    "La nueva contraseña no puede ser igual a la anterior.",
-                    "Cambiar contraseña",
-                    JOptionPane.ERROR_MESSAGE
-                );
+                        this,
+                        "La nueva contraseña no puede ser igual a la anterior.",
+                        "Cambiar contraseña",
+                        JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
@@ -792,4 +860,3 @@ class ChangePasswordWindow extends JFrame {
         root.add(card, BorderLayout.CENTER);
     }
 }
-

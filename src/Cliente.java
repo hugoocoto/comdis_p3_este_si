@@ -165,7 +165,8 @@ public class Cliente extends UnicastRemoteObject implements ICliente {
 
     public boolean registrarUsuario(String nombre2, String clave2) {
         try {
-            if(!ensureServer()) return false;
+            if (!ensureServer())
+                return false;
             return servidor.registrarUsuario(nombre2, Utils.encrypt(clave2));
         } catch (RemoteException e) {
             System.out.println(e);
@@ -179,7 +180,8 @@ public class Cliente extends UnicastRemoteObject implements ICliente {
 
     public ArrayList<String> getamigos() {
         try {
-            if(!ensureServer()) return new ArrayList<>();
+            if (!ensureServer())
+                return new ArrayList<>();
             return new ArrayList<>(servidor.getAmigos(nombre));
         } catch (RemoteException e) {
             System.out.println(e);
@@ -208,7 +210,8 @@ public class Cliente extends UnicastRemoteObject implements ICliente {
 
     public ArrayList<String> buscarUsuario(String ask) {
         try {
-            if(!ensureServer()) return new ArrayList<>();
+            if (!ensureServer())
+                return new ArrayList<>();
             return servidor.buscarUsuario(ask);
         } catch (RemoteException e) {
             System.out.println(e);
@@ -218,7 +221,8 @@ public class Cliente extends UnicastRemoteObject implements ICliente {
 
     public ArrayList<String> getSolicitudes() {
         try {
-            if(!ensureServer()) return new ArrayList<>();
+            if (!ensureServer())
+                return new ArrayList<>();
             return new ArrayList<>(servidor.getSolicitudesPendientes(nombre));
         } catch (RemoteException e) {
             System.out.println(e);
@@ -245,7 +249,8 @@ public class Cliente extends UnicastRemoteObject implements ICliente {
 
     public boolean existeUsuario(String nombre) {
         try {
-            if(!ensureServer()) return false;
+            if (!ensureServer())
+                return false;
             return servidor.existeUsuario(nombre);
         } catch (RemoteException e) {
             return false; // o true?
@@ -282,10 +287,11 @@ public class Cliente extends UnicastRemoteObject implements ICliente {
     }
 
     private boolean ensureServer() {
-        if (servidor != null) return true;
+        if (servidor != null)
+            return true;
         try {
             servidor = getServer("rmi://" + SERVER_HOST + ":" + SERVER_PORT + "/Servidor");
-        return true;
+            return true;
         } catch (Exception e) {
             System.out.println("No se pudo localizar el servidor: " + e);
             return false;
