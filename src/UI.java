@@ -6,6 +6,8 @@ import java.rmi.RemoteException;
 import java.sql.Time;
 import java.util.ArrayList;
 
+import javax.swing.JTable.PrintMode;
+
 public class UI {
     private BufferedReader br;
     private String nombre;
@@ -46,6 +48,9 @@ public class UI {
         if (state.startsWith("chateando")) {
             refreshChat(state.substring("chateando con ".length()));
         }
+        if (state.startsWith("menu")) {
+            refresh_menu();
+        }
     }
 
     private void refreshChat(String amigo) {
@@ -80,37 +85,45 @@ public class UI {
         return true;
     }
 
+    private String has_new_messages_indicator() {
+        return cliente.hasNewMessages() ? "*" : "";
+    }
+
+    private String has_solicitudes_indicator() {
+        return cliente.getSolicitudes().isEmpty() ? "" : "*";
+    }
+
+    private void refresh_menu() {
+        System.out.print("\033[s");
+        print_menu();
+        System.out.print("\033[u");
+    }
+
     private void print_menu() {
-        clearScreen();
+        System.out.print("\033[H");
         System.out.println("MENU");
-        System.out.println("[C] chats");
+        System.out.println("[C] chats" + has_new_messages_indicator());
         System.out.println("[A] amigos");
         System.out.println("[B] buscar");
-        System.out.println("[S] solicitudes");
+        System.out.println("[S] solicitudes" + has_solicitudes_indicator());
         System.out.println("[Q] salir");
     }
 
     private Integer mainloop() {
+        String resp;
         while (!should_quit) {
+            clearScreen();
             print_menu();
-            char resp = ask().toLowerCase().toCharArray()[0];
-            switch (resp) {
-                case 'c':
-                    windowChats();
-                    break;
-                case 'a':
-                    windowAmigos();
-                    break;
-                case 'b':
-                    windowBuscar();
-                    break;
-                case 's':
-                    windowSolicitudes();
-                    break;
-                case 'q':
-                    should_quit = true;
-
+            state = "menu";
+            if ((resp = ask()).isEmpty()) continue;
+            switch (resp.toLowerCase().toCharArray()[0]) {
+                case 'c': windowChats(); break;
+                case 'a': windowAmigos(); break;
+                case 'b': windowBuscar(); break;
+                case 's': windowSolicitudes(); break;
+                case 'q': should_quit = true; break;
             }
+            state = "";
         }
         return 0; // Exit code
     }
@@ -142,10 +155,10 @@ public class UI {
         ArrayList<String> chats = cliente.getchats();
         displayList(chats, 100);
         System.out.println("Escribe el numero de chat o vacio para salir");
-        String resp = ask();
-        if (resp.isEmpty())
+        Integer n = getInteger(ask(), 0, chats.size());
+        if (n.equals(-1)) {
             return;
-        Integer n = getInteger(resp, 0, chats.size());
+        }
         openChat(chats.get(n));
         state = "";
     }
@@ -156,7 +169,7 @@ public class UI {
 
         clearScreen();
         while (true) {
-            System.out.println("\033[KChat con " + amigo);
+            System.out.println("\033[H\033[KChat con " + amigo);
             displayList(cliente.getMensajes(amigo), 10, 10);
             String resp = ask("\033[KEnviar: ");
             if (resp.isEmpty())
@@ -169,6 +182,8 @@ public class UI {
 
     private Integer getInteger(String s, Integer min, Integer max) {
         try {
+            if (s == null || s.isEmpty())
+                return -1;
             Integer n = Integer.parseInt(s);
             if (n < min || n > max)
                 return -1;
@@ -196,13 +211,7 @@ public class UI {
         ArrayList<String> buscar = cliente.buscarUsuario(ask());
         System.out.println("Selecciona un numero para enviar solicitud:");
         displayList(buscar, 100);
-        String resp = ask();
-
-        if (resp.isEmpty()) {
-            return;
-        }
-
-        Integer n = getInteger(resp, 0, buscar.size());
+        Integer n = getInteger(ask(), 0, buscar.size());
         if (n.equals(-1)) {
             return;
         }
@@ -216,10 +225,10 @@ public class UI {
         ArrayList<String> solis = cliente.getSolicitudes();
         System.out.println("Selecciona un numero para aceptar la solicitud:");
         displayList(solis, 100);
-        String resp = ask();
-        if (resp.isEmpty())
+        Integer n = getInteger(ask(), 0, solis.size());
+        if (n.equals(-1)) {
             return;
-        Integer n = getInteger(resp, 0, solis.size());
+        }
         cliente.aceptarSolicitud(solis.get(n));
     }
 

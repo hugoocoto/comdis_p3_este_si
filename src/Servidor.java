@@ -65,8 +65,8 @@ class Servidor extends UnicastRemoteObject implements IServidor {
 
         for (String amigo : amigos.get(nombre)) {
             if (clientes.containsKey(amigo)) {
-                clientes.get(nombre).amigoConectado(amigo, clientes.get(amigo));
-                clientes.get(amigo).amigoConectado(nombre, clientes.get(nombre));
+                clientes.get(nombre).notificarAmigoConectado(amigo, clientes.get(amigo));
+                clientes.get(amigo).notificarAmigoConectado(nombre, clientes.get(nombre));
             }
         }
 
@@ -77,7 +77,7 @@ class Servidor extends UnicastRemoteObject implements IServidor {
     public void logout(String nombre) throws RemoteException {
         for (String amigo : amigos.get(nombre)) {
             if (clientes.containsKey(amigo)) {
-                clientes.get(amigo).amigoDesconectado(nombre);
+                clientes.get(amigo).notificarAmigoDesconectado(nombre);
             }
         }
 
@@ -104,6 +104,9 @@ class Servidor extends UnicastRemoteObject implements IServidor {
             return; // No mandar si ya son amigos
         saveAllData();
         solicitudesPendientes.get(aUsuario).add(deUsuario);
+        if (clientes.containsKey(aUsuario)) {
+            clientes.get(aUsuario).notificarSolicitudPendiente(deUsuario);
+        }
     }
 
     @Override
@@ -120,8 +123,8 @@ class Servidor extends UnicastRemoteObject implements IServidor {
         solicitudesPendientes.get(amigo).remove(usuario);
 
         if (clientes.containsKey(amigo)) { // amigo esta conectado
-            clientes.get(usuario).amigoConectado(amigo, clientes.get(amigo));
-            clientes.get(amigo).amigoConectado(usuario, clientes.get(usuario));
+            clientes.get(usuario).notificarAmigoConectado(amigo, clientes.get(amigo));
+            clientes.get(amigo).notificarAmigoConectado(usuario, clientes.get(usuario));
         }
 
         saveAllData();

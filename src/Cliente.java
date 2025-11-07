@@ -19,6 +19,7 @@ public class Cliente extends UnicastRemoteObject implements ICliente {
     /* Todos los mensajes enviados y recibidos de / a un amigo conectado */
     private volatile HashMap<String, ArrayList<String>> mensajes;
     private HashMap<String, ICliente> amigosConectados;
+    private boolean has_messages = false;
 
     public Cliente() throws RemoteException {
         super();
@@ -72,10 +73,11 @@ public class Cliente extends UnicastRemoteObject implements ICliente {
      */
     public void enviar(String de, String mensaje) throws RemoteException {
         // Este no se tiene que usar
+        has_messages = true;
+        mensajes.get(de).add(de + ": " + mensaje);
         synchronized (this) {
             this.notifyAll();
         }
-        mensajes.get(de).add(de + ": " + mensaje);
     }
 
     // Este para enviar
@@ -89,17 +91,31 @@ public class Cliente extends UnicastRemoteObject implements ICliente {
     }
 
     @Override
-    public void amigoConectado(String amigo, ICliente interfaz) {
+    public void notificarAmigoConectado(String amigo, ICliente interfaz) {
         amigosConectados.put(amigo, interfaz);
-        if (mensajes.get(amigo) == null) {
+        if (!mensajes.containsKey(amigo)) {
             mensajes.put(amigo, new ArrayList<>());
+        }
+        synchronized (this) {
+            this.notifyAll();
         }
     }
 
     @Override
-    public void amigoDesconectado(String amigo) throws RemoteException {
+    public void notificarAmigoDesconectado(String amigo) throws RemoteException {
         amigosConectados.remove(amigo);
-        mensajes.remove(amigo);
+        // No borra los mensajes porque asi si se desconecta y se vuelve a
+        // conectar este usuario no pierde los mensajes.
+        synchronized (this) {
+            this.notifyAll();
+        }
+    }
+
+    @Override
+    public void notificarSolicitudPendiente(String amigo) throws RemoteException {
+        synchronized (this) {
+            this.notifyAll();
+        }
     }
 
     public void servir(ICliente cliente, Integer puerto) {
@@ -209,6 +225,12 @@ public class Cliente extends UnicastRemoteObject implements ICliente {
 
     public ICliente getInterfaz(String amigo) {
         return amigosConectados.get(amigo);
+    }
+
+    public boolean hasNewMessages() {
+        boolean status = has_messages;
+        has_messages = false;
+        return status;
     }
 
 }
