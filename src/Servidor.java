@@ -123,8 +123,8 @@ class Servidor extends UnicastRemoteObject implements IServidor {
         if (amigos.get(aUsuario).contains(deUsuario)) {
             return; // No mandar si ya son amigos
         }
-        saveAllData();
         solicitudesPendientes.get(aUsuario).add(deUsuario);
+        saveAllData();
         if (isUsuarioConectado(aUsuario)) {
             clientes.get(aUsuario).notificarSolicitudPendiente(deUsuario);
         }
@@ -158,6 +158,7 @@ class Servidor extends UnicastRemoteObject implements IServidor {
     public boolean rechazarSolicitudAmistad(String usuario, String amigo) throws RemoteException {
         solicitudesPendientes.get(usuario).remove(amigo);
         solicitudesPendientes.get(amigo).remove(usuario);
+        saveAllData();
         return true;
     }
 
@@ -168,6 +169,7 @@ class Servidor extends UnicastRemoteObject implements IServidor {
 
     @Override
     public boolean isUsuarioConectado(String user) throws RemoteException {
+        System.out.println("Clientes: " + clientes.keySet());
         return clientes.containsKey(user);
     }
 
@@ -230,6 +232,8 @@ class Servidor extends UnicastRemoteObject implements IServidor {
 
     public boolean cambiarClave(String nombre, String vieja, String nueva) {
         if (!loginExitoso(nombre, vieja)) {
+            System.out.println("Login fallido en cambiar clave: '" + nombre + "' '" + vieja + "'");
+            System.out.println(passwords);
             return false;
         }
         passwords.put(nombre, nueva);
