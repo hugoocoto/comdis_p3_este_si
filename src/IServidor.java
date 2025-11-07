@@ -45,5 +45,5 @@ public interface IServidor extends Remote {
 
     boolean existeUsuario(String user) throws RemoteException;
 
-	boolean cambiarClave(String nombre, String vieja, String nueva)throws RemoteException;
+    boolean cambiarClave(String nombre, String vieja, String nueva) throws RemoteException;
 }
