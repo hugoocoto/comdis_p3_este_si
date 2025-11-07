@@ -114,17 +114,6 @@ public class UI {
         System.out.print("\033[u");
     }
 
-    private void printUIMessages() {
-        ArrayList<String> msgs = cliente.getUIMessages();
-        if (msgs.isEmpty())
-            return;
-        System.out.println("----- Messages -----");
-        for (String msg : msgs) {
-            System.out.println(msg);
-        }
-        System.out.println("--------------------");
-    }
-
     private void print_menu() {
         System.out.print("\033[H");
         System.out.println("MENU");
@@ -133,7 +122,6 @@ public class UI {
         System.out.println("[B] buscar");
         System.out.println("[S] solicitudes" + has_solicitudes_indicator());
         System.out.println("[Q] salir");
-        printUIMessages();
     }
 
     private Integer mainloop() {

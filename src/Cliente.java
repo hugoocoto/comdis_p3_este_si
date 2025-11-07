@@ -21,7 +21,6 @@ public class Cliente extends UnicastRemoteObject implements ICliente {
     private Map<String, ArrayList<String>> mensajes;
     private Map<String, ICliente> amigosConectados;
     private boolean has_messages = false;
-    private ArrayList<String> UI_messages = new ArrayList<>();
 
     public Cliente() throws RemoteException {
         super();
@@ -35,7 +34,7 @@ public class Cliente extends UnicastRemoteObject implements ICliente {
             servidor.logout(nombre);
             return true;
         } catch (RemoteException e) {
-            UI_messages.add(e.toString());
+            System.out.println(e.toString());
             return false;
         }
     }
@@ -58,7 +57,7 @@ public class Cliente extends UnicastRemoteObject implements ICliente {
                     "rmi://localhost:" + this.puerto + "/Cliente");
 
         } catch (MalformedURLException | RemoteException | NotBoundException e) {
-            UI_messages.add(e.toString());
+            System.out.println(e.toString());
             return false;
         }
     }
@@ -92,13 +91,12 @@ public class Cliente extends UnicastRemoteObject implements ICliente {
             a.enviar(this.nombre, mensaje);
             mensajes.get(a.getNombre()).add(nombre + ": " + mensaje);
         } catch (Exception e) {
-            UI_messages.add(e.toString());
+            System.out.println(e.toString());
         }
     }
 
     @Override
     public void notificarAmigoConectado(String amigo, ICliente interfaz) {
-        UI_messages.add("Amigo conectado: " + amigo);
         amigosConectados.put(amigo, interfaz);
         mensajes.put(amigo, new ArrayList<>());
         synchronized (this) {
@@ -169,7 +167,7 @@ public class Cliente extends UnicastRemoteObject implements ICliente {
         try {
             return servidor.registrarUsuario(nombre2, Utils.encrypt(clave2));
         } catch (RemoteException e) {
-            UI_messages.add(e.toString());
+            System.out.println(e.toString());
             return false;
         }
     }
@@ -182,7 +180,7 @@ public class Cliente extends UnicastRemoteObject implements ICliente {
         try {
             return new ArrayList<>(servidor.getAmigos(nombre));
         } catch (RemoteException e) {
-            UI_messages.add(e.toString());
+            System.out.println(e.toString());
             return new ArrayList<>();
         }
     }
@@ -191,16 +189,15 @@ public class Cliente extends UnicastRemoteObject implements ICliente {
         try {
             servidor.solicitarAmistad(nombre, string);
         } catch (RemoteException e) {
-            UI_messages.add(e.toString());
+            System.out.println(e.toString());
         }
     }
 
     public void aceptarSolicitud(String usuario) {
         try {
-            UI_messages.add("Aceptar solicitud de " + usuario);
             servidor.aceptarSolicitudAmistad(nombre, usuario);
         } catch (RemoteException e) {
-            UI_messages.add(e.toString());
+            System.out.println(e.toString());
         }
         synchronized (this) {
             this.notifyAll();
@@ -211,7 +208,7 @@ public class Cliente extends UnicastRemoteObject implements ICliente {
         try {
             return servidor.buscarUsuario(ask);
         } catch (RemoteException e) {
-            UI_messages.add(e.toString());
+            System.out.println(e.toString());
             return new ArrayList<>();
         }
     }
@@ -220,7 +217,7 @@ public class Cliente extends UnicastRemoteObject implements ICliente {
         try {
             return new ArrayList<>(servidor.getSolicitudesPendientes(nombre));
         } catch (RemoteException e) {
-            UI_messages.add(e.toString());
+            System.out.println(e.toString());
             return new ArrayList<>();
         }
     }
@@ -239,12 +236,6 @@ public class Cliente extends UnicastRemoteObject implements ICliente {
     public boolean hasNewMessages() {
         boolean status = has_messages;
         has_messages = false;
-        return status;
-    }
-
-    public ArrayList<String> getUIMessages() {
-        ArrayList<String> status = new ArrayList<>(UI_messages);
-        UI_messages.clear();
         return status;
     }
 

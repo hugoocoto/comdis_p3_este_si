@@ -22,7 +22,6 @@ class Servidor extends UnicastRemoteObject implements IServidor {
     private static final int RMI_PORT = 1099;
 
     public static void main(String[] args) {
-        System.out.println("CALL: " + "main");
         try {
             java.rmi.registry.LocateRegistry.createRegistry(RMI_PORT);
             Servidor servidor = new Servidor();
@@ -34,7 +33,6 @@ class Servidor extends UnicastRemoteObject implements IServidor {
     }
 
     private static void startRegistry(int RMIPortNum) throws RemoteException {
-        System.out.println("CALL: " + "startRegistry");
         try {
             Registry registry = LocateRegistry.getRegistry(RMIPortNum);
             registry.list();
@@ -47,7 +45,6 @@ class Servidor extends UnicastRemoteObject implements IServidor {
     }
 
     private static void listRegistry(String registryURL) throws RemoteException, MalformedURLException {
-        System.out.println("CALL: " + "listRegistry");
         System.out.println("Registry " + registryURL + " contains: ");
         String[] names = Naming.list(registryURL);
         for (String name : names) {
@@ -57,7 +54,6 @@ class Servidor extends UnicastRemoteObject implements IServidor {
 
     public Servidor() throws RemoteException {
         super();
-        System.out.println("CALL: " + "Servidor");
         loadAllData();
         System.out.println("Servidor RMI iniciado");
         System.out.println("Usuarios registrados: " + passwords.keySet());
@@ -66,7 +62,6 @@ class Servidor extends UnicastRemoteObject implements IServidor {
 
     @Override
     public boolean login(String nombre, String clave, String direccion) throws RemoteException {
-        System.out.println("CALL: " + "login");
         if (!loginExitoso(nombre, clave)) {
             System.out.println("Login failed");
             return false; // nombre y clave no coinciden
@@ -94,7 +89,6 @@ class Servidor extends UnicastRemoteObject implements IServidor {
 
     @Override
     public void logout(String nombre) throws RemoteException {
-        System.out.println("CALL: " + "logout");
         for (String amigo : amigos.get(nombre)) {
             if (isUsuarioConectado(amigo)) {
                 clientes.get(amigo).notificarAmigoDesconectado(nombre);
@@ -107,13 +101,11 @@ class Servidor extends UnicastRemoteObject implements IServidor {
 
     @Override
     public boolean existeUsuario(String user) throws RemoteException {
-        System.out.println("CALL: " + "existeUsuario");
         return obtenerUsuarios().contains(user);
     }
 
     @Override
     public boolean registrarUsuario(String user, String clave) throws RemoteException {
-        System.out.println("CALL: " + "registrarUsuario");
 
         if (existeUsuario(user)) {
             return false;
@@ -128,7 +120,6 @@ class Servidor extends UnicastRemoteObject implements IServidor {
 
     @Override
     public void solicitarAmistad(String deUsuario, String aUsuario) throws RemoteException {
-        System.out.println("CALL: " + "solicitarAmistad");
         if (amigos.get(aUsuario).contains(deUsuario)) {
             return; // No mandar si ya son amigos
         }
@@ -141,13 +132,11 @@ class Servidor extends UnicastRemoteObject implements IServidor {
 
     @Override
     public ArrayList<String> getSolicitudesPendientes(String usuario) throws RemoteException {
-        System.out.println("CALL: " + "getSolicitudesPendientes");
         return solicitudesPendientes.get(usuario);
     }
 
     @Override
     public boolean aceptarSolicitudAmistad(String usuario, String amigo) throws RemoteException {
-        System.out.println("CALL: " + "aceptarSolicitudAmistad(" + usuario + ", " + amigo + ")");
         amigos.get(usuario).add(amigo);
         amigos.get(amigo).add(usuario);
 
@@ -167,7 +156,6 @@ class Servidor extends UnicastRemoteObject implements IServidor {
 
     @Override
     public boolean rechazarSolicitudAmistad(String usuario, String amigo) throws RemoteException {
-        System.out.println("CALL: " + "rechazarSolicitudAmistad");
         solicitudesPendientes.get(usuario).remove(amigo);
         solicitudesPendientes.get(amigo).remove(usuario);
         return true;
@@ -175,13 +163,11 @@ class Servidor extends UnicastRemoteObject implements IServidor {
 
     @Override
     public ArrayList<String> getAmigos(String user) throws RemoteException {
-        System.out.println("CALL: " + "getAmigos");
         return amigos.get(user);
     }
 
     @Override
     public boolean isUsuarioConectado(String user) throws RemoteException {
-        System.out.println("CALL: " +
                 "isUsuarioConectado(" + user + ")" +
                 "returns " + clientes.containsKey(user));
         System.out.println("Clientes: " + clientes.keySet());
@@ -190,12 +176,10 @@ class Servidor extends UnicastRemoteObject implements IServidor {
 
     @Override
     public String obtenerDireccionRMI(String usuario) throws RemoteException {
-        System.out.println("CALL: " + "obtenerDireccionRMI");
         return isUsuarioConectado(usuario) ? clientesdirs.get(usuario) : null;
     }
 
     public void servir(Servidor servidor, Integer puerto) {
-        System.out.println("CALL: " + "servir");
 
         try {
             startRegistry(puerto);
@@ -212,7 +196,6 @@ class Servidor extends UnicastRemoteObject implements IServidor {
 
     @Override
     public ArrayList<String> buscarUsuario(String ask) {
-        System.out.println("CALL: " + "buscarUsuario");
         ArrayList<String> m = new ArrayList<>();
         for (String a : amigos.keySet()) {
             if (match(a, ask)) {
@@ -223,32 +206,27 @@ class Servidor extends UnicastRemoteObject implements IServidor {
     }
 
     private ArrayList<String> obtenerUsuarios() {
-        System.out.println("CALL: " + "obtenerUsuarios");
         return new ArrayList<>(this.passwords.keySet());
     }
 
     private void loadAllData() {
-        System.out.println("CALL: " + "loadAllData");
         passwords.putAll(Utils.loadUsersFromFile(PASSWORDS_FILE));
         amigos.putAll(Utils.loadFriendsFromFile(FRIENDS_FILE));
         solicitudesPendientes.putAll(Utils.loadFriendsFromFile(PENDING_REQUESTS_FILE));
     }
 
     private void saveAllData() {
-        System.out.println("CALL: " + "saveAllData");
         Utils.saveUsersToFile(passwords, PASSWORDS_FILE);
         Utils.saveFriendsToFile(amigos, FRIENDS_FILE);
         Utils.saveFriendsToFile(solicitudesPendientes, PENDING_REQUESTS_FILE);
     }
 
     private boolean loginExitoso(String nombre, String clave) {
-        System.out.println("CALL: " + "loginExitoso");
         return obtenerUsuarios().contains(nombre) &&
                 passwords.get(nombre).equals(clave);
     }
 
     private boolean match(String a, String ask) {
-        System.out.println("CALL: " + "match");
         // Temp implementation
         return a.toLowerCase().contains(ask.toLowerCase());
     }
