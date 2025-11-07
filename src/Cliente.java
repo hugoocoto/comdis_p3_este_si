@@ -62,10 +62,6 @@ public class Cliente extends UnicastRemoteObject implements ICliente {
     }
 
     @Override
-    public void nuevoAmigo(String amigo) throws RemoteException {
-    }
-
-    @Override
     /*
      * Esta funcion se llama cada vez que un cliente le envia un mensaje a este
      * cliente. La invova a traves de la interfaz remota. Este cliente no debe

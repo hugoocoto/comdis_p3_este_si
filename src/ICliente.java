@@ -5,8 +5,6 @@ public interface ICliente extends Remote {
 
     String getNombre() throws RemoteException;;
 
-    void nuevoAmigo(String amigo) throws RemoteException;
-
     void amigoConectado(String amigo, ICliente interfaz) throws RemoteException;
 
     void amigoDesconectado(String amigo) throws RemoteException;

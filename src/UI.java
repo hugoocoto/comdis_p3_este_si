@@ -126,14 +126,14 @@ public class UI {
         max = Math.min(list.size(), max);
         // I truly think that J clears from the cursor to the end of the line
         for (int i = list.size() - max; i < list.size(); i++) {
-            System.out.print("| ");
+            System.out.print("\033[K| ");
             if (list.get(i).startsWith(this.nombre)) {
-                System.out.print("\033[J\t\t");
+                System.out.print("\t\t");
             }
             System.out.println(list.get(i));
         }
         for (int i = max; i < size; i++)
-            System.out.println("| ");
+            System.out.println("\033[K| ");
     }
 
     private void windowChats() {
@@ -154,11 +154,11 @@ public class UI {
         // chat de nombre <-> amigo
         state = "chateando con " + amigo;
 
+        clearScreen();
         while (true) {
-            clearScreen();
-            System.out.println("Chat con " + amigo);
+            System.out.println("\033[KChat con " + amigo);
             displayList(cliente.getMensajes(amigo), 10, 10);
-            String resp = ask("Enviar: ");
+            String resp = ask("\033[KEnviar: ");
             if (resp.isEmpty())
                 return;
             if (cliente != null) {

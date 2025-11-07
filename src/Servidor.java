@@ -28,29 +28,29 @@ class Servidor extends UnicastRemoteObject implements IServidor {
         servir(this, RMI_PORT);
     }
 
-    private synchronized ArrayList<String> obtenerUsuarios() {
+    private ArrayList<String> obtenerUsuarios() {
         return new ArrayList<>(this.passwords.keySet());
     }
 
-    private synchronized void loadAllData() {
+    private void loadAllData() {
         passwords.putAll(Utils.loadUsersFromFile(PASSWORDS_FILE));
         amigos.putAll(Utils.loadFriendsFromFile(FRIENDS_FILE));
         solicitudesPendientes.putAll(Utils.loadFriendsFromFile(PENDING_REQUESTS_FILE));
     }
 
-    private synchronized void saveAllData() {
+    private void saveAllData() {
         Utils.saveUsersToFile(passwords, PASSWORDS_FILE);
         Utils.saveFriendsToFile(amigos, FRIENDS_FILE);
         Utils.saveFriendsToFile(solicitudesPendientes, PENDING_REQUESTS_FILE);
     }
 
-    private synchronized boolean loginExitoso(String nombre, String clave) {
+    private boolean loginExitoso(String nombre, String clave) {
         return obtenerUsuarios().contains(nombre) &&
                 passwords.get(nombre).equals(clave);
     }
 
     @Override
-    public synchronized boolean login(String nombre, String clave, String direccion) throws RemoteException {
+    public boolean login(String nombre, String clave, String direccion) throws RemoteException {
         if (!loginExitoso(nombre, clave))
             return false; // nombre y clave no coinciden
 
@@ -74,7 +74,7 @@ class Servidor extends UnicastRemoteObject implements IServidor {
     }
 
     @Override
-    public synchronized void logout(String nombre) throws RemoteException {
+    public void logout(String nombre) throws RemoteException {
         for (String amigo : amigos.get(nombre)) {
             if (clientes.containsKey(amigo)) {
                 clientes.get(amigo).amigoDesconectado(nombre);
@@ -86,7 +86,7 @@ class Servidor extends UnicastRemoteObject implements IServidor {
     }
 
     @Override
-    public synchronized boolean registrarUsuario(String user, String clave) throws RemoteException {
+    public boolean registrarUsuario(String user, String clave) throws RemoteException {
 
         if (obtenerUsuarios().contains(user))
             return false;
@@ -99,7 +99,7 @@ class Servidor extends UnicastRemoteObject implements IServidor {
     }
 
     @Override
-    public synchronized void solicitarAmistad(String deUsuario, String aUsuario) throws RemoteException {
+    public void solicitarAmistad(String deUsuario, String aUsuario) throws RemoteException {
         if (amigos.get(aUsuario).contains(deUsuario))
             return; // No mandar si ya son amigos
         saveAllData();
@@ -107,29 +107,21 @@ class Servidor extends UnicastRemoteObject implements IServidor {
     }
 
     @Override
-    public synchronized ArrayList<String> getSolicitudesPendientes(String usuario) throws RemoteException {
+    public ArrayList<String> getSolicitudesPendientes(String usuario) throws RemoteException {
         return solicitudesPendientes.get(usuario);
     }
 
     @Override
-    public synchronized boolean aceptarSolicitudAmistad(String usuario, String amigo) throws RemoteException {
+    public boolean aceptarSolicitudAmistad(String usuario, String amigo) throws RemoteException {
         amigos.get(usuario).add(amigo);
         amigos.get(amigo).add(usuario);
 
         solicitudesPendientes.get(usuario).remove(amigo);
         solicitudesPendientes.get(amigo).remove(usuario);
 
-        if (clientes.containsKey(usuario)) {
-            clientes.get(usuario).nuevoAmigo(amigo);
-            if (clientes.containsKey(amigo)) {
-                clientes.get(usuario).amigoConectado(amigo, clientes.get(amigo));
-            }
-        }
-        if (clientes.containsKey(amigo)) {
-            clientes.get(amigo).nuevoAmigo(usuario);
-            if (clientes.containsKey(usuario)) {
-                clientes.get(amigo).amigoConectado(usuario, clientes.get(usuario));
-            }
+        if (clientes.containsKey(amigo)) { // amigo esta conectado
+            clientes.get(usuario).amigoConectado(amigo, clientes.get(amigo));
+            clientes.get(amigo).amigoConectado(usuario, clientes.get(usuario));
         }
 
         saveAllData();
@@ -137,7 +129,7 @@ class Servidor extends UnicastRemoteObject implements IServidor {
     }
 
     @Override
-    public synchronized boolean rechazarSolicitudAmistad(String usuario, String amigo) throws RemoteException {
+    public boolean rechazarSolicitudAmistad(String usuario, String amigo) throws RemoteException {
         solicitudesPendientes.get(usuario).remove(amigo);
         solicitudesPendientes.get(amigo).remove(usuario);
         return true;
@@ -145,16 +137,16 @@ class Servidor extends UnicastRemoteObject implements IServidor {
 
     // ===== INFORMACIÓN DE USUARIOS =====
     @Override
-    public synchronized ArrayList<String> getAmigos(String user) throws RemoteException {
+    public ArrayList<String> getAmigos(String user) throws RemoteException {
         return amigos.get(user);
     }
 
     @Override
-    public synchronized boolean isUsuarioConectado(String user) throws RemoteException {
+    public boolean isUsuarioConectado(String user) throws RemoteException {
         return clientes.containsKey(user);
     }
 
-    public synchronized static void main(String[] args) {
+    public static void main(String[] args) {
         try {
             java.rmi.registry.LocateRegistry.createRegistry(RMI_PORT);
             Servidor servidor = new Servidor();
@@ -166,11 +158,11 @@ class Servidor extends UnicastRemoteObject implements IServidor {
     }
 
     @Override
-    public synchronized String obtenerDireccionRMI(String usuario) throws RemoteException {
+    public String obtenerDireccionRMI(String usuario) throws RemoteException {
         return isUsuarioConectado(usuario) ? clientesdirs.get(usuario) : null;
     }
 
-    public synchronized void servir(Servidor servidor, Integer puerto) {
+    public void servir(Servidor servidor, Integer puerto) {
 
         try {
             startRegistry(puerto);
@@ -185,7 +177,7 @@ class Servidor extends UnicastRemoteObject implements IServidor {
         }
     }
 
-    private synchronized static void startRegistry(int RMIPortNum) throws RemoteException {
+    private static void startRegistry(int RMIPortNum) throws RemoteException {
         try {
             Registry registry = LocateRegistry.getRegistry(RMIPortNum);
             registry.list();
@@ -198,7 +190,7 @@ class Servidor extends UnicastRemoteObject implements IServidor {
         }
     }
 
-    private synchronized static void listRegistry(String registryURL) throws RemoteException, MalformedURLException {
+    private static void listRegistry(String registryURL) throws RemoteException, MalformedURLException {
         System.out.println("Registry " + registryURL + " contains: ");
         String[] names = Naming.list(registryURL);
         for (String name : names) {
@@ -207,7 +199,7 @@ class Servidor extends UnicastRemoteObject implements IServidor {
     }
 
     @Override
-    public synchronized ArrayList<String> buscarUsuario(String ask) {
+    public ArrayList<String> buscarUsuario(String ask) {
         ArrayList<String> m = new ArrayList<>();
         for (String a : amigos.keySet()) {
             if (match(a, ask)) {
@@ -217,7 +209,7 @@ class Servidor extends UnicastRemoteObject implements IServidor {
         return m;
     }
 
-    private synchronized boolean match(String a, String ask) {
+    private boolean match(String a, String ask) {
         // Temp implementation
         return a.toLowerCase().contains(ask.toLowerCase());
     }
