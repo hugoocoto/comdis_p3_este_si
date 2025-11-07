@@ -8,11 +8,11 @@ import java.util.*;
 
 class Servidor extends UnicastRemoteObject implements IServidor {
 
-    private HashMap<String, ArrayList<String>> amigos = new HashMap<>();
-    private HashMap<String, String> passwords = new HashMap<>();
-    private HashMap<String, ICliente> clientes = new HashMap<>();
-    private HashMap<String, String> clientesdirs = new HashMap<>();
-    private HashMap<String, ArrayList<String>> solicitudesPendientes = new HashMap<>();
+    private Map<String, ArrayList<String>> amigos = Collections.synchronizedMap(new HashMap<>());
+    private Map<String, String> passwords = Collections.synchronizedMap(new HashMap<>());
+    private Map<String, ICliente> clientes = Collections.synchronizedMap(new HashMap<>());
+    private Map<String, String> clientesdirs = Collections.synchronizedMap(new HashMap<>());
+    private Map<String, ArrayList<String>> solicitudesPendientes = Collections.synchronizedMap(new HashMap<>());
     // solicitudesPendientes.get(aUsuario).add(deUsuario);
 
     private final static String PASSWORDS_FILE = "./data/user/passwords/pswd";
@@ -83,6 +83,11 @@ class Servidor extends UnicastRemoteObject implements IServidor {
 
         clientes.remove(nombre);
         clientesdirs.remove(nombre);
+    }
+
+    @Override
+    public boolean existeUsuario(String user) throws RemoteException {
+        return obtenerUsuarios().contains(user);
     }
 
     @Override

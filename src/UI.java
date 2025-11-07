@@ -66,9 +66,14 @@ public class UI {
             boolean status = c.login(
                     this.nombre = ask("Nombre: "),
                     this.clave = ask("Clave: "),
-                    this.puerto = Integer.parseInt(ask("Puerto: ")));
+                    this.puerto = getInteger(ask("Port: "), 1024, 9999, 1100));
             if (status)
                 break;
+
+            if (cliente.existeUsuario(this.nombre)) {
+                System.out.println("Usuario y clave no coinciden!");
+                continue;
+            }
 
             System.out.println("Usuario no registrado!");
 
@@ -115,13 +120,24 @@ public class UI {
             clearScreen();
             print_menu();
             state = "menu";
-            if ((resp = ask()).isEmpty()) continue;
+            if ((resp = ask()).isEmpty())
+                continue;
             switch (resp.toLowerCase().toCharArray()[0]) {
-                case 'c': windowChats(); break;
-                case 'a': windowAmigos(); break;
-                case 'b': windowBuscar(); break;
-                case 's': windowSolicitudes(); break;
-                case 'q': should_quit = true; break;
+                case 'c':
+                    windowChats();
+                    break;
+                case 'a':
+                    windowAmigos();
+                    break;
+                case 'b':
+                    windowBuscar();
+                    break;
+                case 's':
+                    windowSolicitudes();
+                    break;
+                case 'q':
+                    should_quit = true;
+                    break;
             }
             state = "";
         }
@@ -181,15 +197,19 @@ public class UI {
     }
 
     private Integer getInteger(String s, Integer min, Integer max) {
+        return getInteger(s, min, max, -1);
+    }
+
+    private Integer getInteger(String s, Integer min, Integer max, Integer def) {
         try {
             if (s == null || s.isEmpty())
-                return -1;
+                return def;
             Integer n = Integer.parseInt(s);
             if (n < min || n > max)
-                return -1;
+                return def;
             return n;
         } catch (Exception e) {
-            return -1;
+            return def;
         }
     }
 

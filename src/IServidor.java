@@ -42,4 +42,6 @@ public interface IServidor extends Remote {
     String obtenerDireccionRMI(String usuario) throws RemoteException;
 
     ArrayList<String> buscarUsuario(String ask) throws RemoteException;
+
+	boolean existeUsuario(String user) throws RemoteException;
 }

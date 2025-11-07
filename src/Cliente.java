@@ -6,7 +6,9 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 
 public class Cliente extends UnicastRemoteObject implements ICliente {
 
@@ -17,14 +19,15 @@ public class Cliente extends UnicastRemoteObject implements ICliente {
     private static final String SERVER_HOST = "localhost";
     private static final Integer SERVER_PORT = 1099;
     /* Todos los mensajes enviados y recibidos de / a un amigo conectado */
-    private volatile HashMap<String, ArrayList<String>> mensajes;
-    private HashMap<String, ICliente> amigosConectados;
+    private Map<String, ArrayList<String>> mensajes;
+    private Map<String, ICliente> amigosConectados;
     private boolean has_messages = false;
 
     public Cliente() throws RemoteException {
         super();
-        mensajes = new HashMap<>();
-        amigosConectados = new HashMap<>();
+        mensajes = Collections.synchronizedMap(new HashMap<>());
+        amigosConectados = Collections.synchronizedMap(new HashMap<>());
+        ;
     }
 
     public boolean logout(String nombre) {
@@ -48,8 +51,10 @@ public class Cliente extends UnicastRemoteObject implements ICliente {
              * la interfaz remota del cliente
              */
             servidor = getServer("rmi://" + SERVER_HOST + ":" + SERVER_PORT + "/Servidor");
-            servir(this, puerto);
-            return servidor.login(nombre, Utils.encrypt(clave), "rmi://localhost:" + puerto + "/Cliente");
+            servir(this, this.puerto);
+            return servidor.login(nombre,
+                    Utils.encrypt(this.clave),
+                    "rmi://localhost:" + this.puerto + "/Cliente");
 
         } catch (MalformedURLException | RemoteException | NotBoundException e) {
             System.out.println(e);
@@ -124,12 +129,12 @@ public class Cliente extends UnicastRemoteObject implements ICliente {
             startRegistry(puerto);
             String registryURL = "rmi://localhost:" + puerto + "/Cliente";
             Naming.rebind(registryURL, cliente);
-            System.out.println("Server registered. Registry currently contains:");
+            // System.out.println("Server registered. Registry currently contains:");
 
             listRegistry(registryURL);
-            System.out.println("Server ready.");
+            // System.out.println("Server ready.");
         } catch (Exception re) {
-            System.out.println("servir: " + re);
+            // System.out.println("servir: " + re);
         }
     }
 
@@ -140,17 +145,17 @@ public class Cliente extends UnicastRemoteObject implements ICliente {
 
         } catch (RemoteException e) {
 
-            System.out.println("RMI registry cannot be located at port " + RMIPortNum);
+            // System.out.println("RMI registry cannot be located at port " + RMIPortNum);
             Registry registry = LocateRegistry.createRegistry(RMIPortNum);
-            System.out.println("RMI registry created at port " + RMIPortNum);
+            // System.out.println("RMI registry created at port " + RMIPortNum);
         }
     }
 
     private static void listRegistry(String registryURL) throws RemoteException, MalformedURLException {
-        System.out.println("Registry " + registryURL + " contains: ");
+        // System.out.println("Registry " + registryURL + " contains: ");
         String[] names = Naming.list(registryURL);
         for (String name : names) {
-            System.out.println(name);
+            // System.out.println(name);
         }
     }
 
@@ -216,8 +221,6 @@ public class Cliente extends UnicastRemoteObject implements ICliente {
 
     public ArrayList<String> getMensajes(String amigo) {
         if (mensajes.get(amigo) == null) {
-            System.out.println("mensajes in " + amigo + " is null -> ");
-            System.out.println(mensajes);
             return new ArrayList<>();
         }
         return new ArrayList<>(mensajes.get(amigo));
@@ -231,6 +234,14 @@ public class Cliente extends UnicastRemoteObject implements ICliente {
         boolean status = has_messages;
         has_messages = false;
         return status;
+    }
+
+    public boolean existeUsuario(String nombre) {
+        try {
+            return servidor.existeUsuario(nombre);
+        } catch (RemoteException e) {
+            return false; // o true?
+        }
     }
 
 }

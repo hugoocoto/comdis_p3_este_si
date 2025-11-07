@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.security.MessageDigest;
 import java.util.Base64;
+import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
 
@@ -22,8 +23,8 @@ public class Utils {
         }
     }
 
-    public static HashMap<String, String> loadUsersFromFile(String archivo) {
-        HashMap<String, String> users = new HashMap<>();
+    public static Map<String, String> loadUsersFromFile(String archivo) {
+        Map<String, String> users = new HashMap<>();
 
         synchronized (archivo) {
             try {
@@ -48,14 +49,14 @@ public class Utils {
         return users;
     }
 
-    public static void saveUsersToFile(HashMap<String, String> users, String archivo) {
+    public static void saveUsersToFile(Map<String, String> users, String archivo) {
         synchronized (archivo) {
             try {
                 File file = new File(archivo);
                 File path = new File(file.getParent());
                 path.mkdirs();
                 BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-                for (HashMap.Entry<String, String> entry : users.entrySet()) {
+                for (Map.Entry<String, String> entry : users.entrySet()) {
                     String line = entry.getKey() + SEP + entry.getValue();
                     writer.write(line);
                     writer.newLine();
@@ -67,8 +68,8 @@ public class Utils {
         }
     }
 
-    public static HashMap<String, ArrayList<String>> loadFriendsFromFile(String archivo) {
-        HashMap<String, ArrayList<String>> friends = new HashMap<>();
+    public static Map<String, ArrayList<String>> loadFriendsFromFile(String archivo) {
+        Map<String, ArrayList<String>> friends = new HashMap<>();
 
         synchronized (archivo) {
             try {
@@ -107,7 +108,7 @@ public class Utils {
         return friends;
     }
 
-    public static void saveFriendsToFile(HashMap<String, ArrayList<String>> friends, String archivo) {
+    public static void saveFriendsToFile(Map<String, ArrayList<String>> friends, String archivo) {
 
         synchronized (archivo) {
             try {
@@ -116,7 +117,7 @@ public class Utils {
                 path.mkdirs();
 
                 BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-                for (HashMap.Entry<String, ArrayList<String>> entry : friends.entrySet()) {
+                for (Map.Entry<String, ArrayList<String>> entry : friends.entrySet()) {
                     String username = entry.getKey();
                     ArrayList<String> amigosList = entry.getValue();
 
